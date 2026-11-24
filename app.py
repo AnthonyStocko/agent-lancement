@@ -9,6 +9,7 @@ import os
 import streamlit as st
 import sys
 import time
+from agent_socle import ihm
 from agent_socle import jenkins_tools, lien_manager
 from agent_socle.ihm import render_technical_journal, run_main_step, search_criteria_form, search_jira_tickets
 from agent_socle.jenkins_tools import trigger_cucumber_job
@@ -40,6 +41,11 @@ if not os.getenv("CLAUDE_CONFIG_DIR", "").strip():
 
 # Connexion OIDC (AGENT_AUTH) : rien n'est affiché ni exécuté avant elle
 CONNECTED = auth_tools.require_login(st)
+
+# Travaux en cours (agent_socle.ihm) : tâches de l'agent lancées hors de la session, contexte de page de l'auteur
+ihm.AGENT, ihm.CONTEXTE = "lancement", ("jira_tickets", "jira_titles", "selected_jira_project", "selected_index", "workflow_step")
+ihm.restaurer_contexte()
+ihm.travaux_en_cours()
 NAV_KEY = "nav_page"
 st.session_state[NAV_KEY] = "lancement"
 
@@ -735,3 +741,6 @@ if st.session_state.get("workflow_step") == "FINISHED":
 
 st.divider()
 render_estimation_settings()
+
+# Choix de la page enregistrés pour la reconnexion (.tmp/sessions/<auteur>/<agent>.json)
+ihm.memoriser_contexte()
