@@ -114,6 +114,9 @@ def _isolated_knowledge(tmp_path, monkeypatch):
     # Journaux des exécutions lancées par l'interface (AppTest) : jamais dans le vrai .tmp/logs ni le journal technique
     monkeypatch.setenv("AGENT_RUN_LOGS_DIR", str(tmp_path / "logs"))
     monkeypatch.setenv("AGENT_JOURNAL_PATH", str(tmp_path / "journal_technique.log"))
+    # Travaux en cours et contexte de page des tests : jamais dans le vrai .tmp
+    monkeypatch.setenv("AGENT_TACHES_DIR", str(tmp_path / "taches"))
+    monkeypatch.setenv("AGENT_SESSIONS_DIR", str(tmp_path / "sessions"))
     # Aucune requête réelle : sélection des données de test et contrôle de version de la base source désactivés
     # (les tests qui en ont besoin passent leur propre requête) ; cumul de coût des sessions temporaire
     monkeypatch.setenv("CUCUMBER_TEST_SELECTION", "0")
