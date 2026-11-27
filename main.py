@@ -1,7 +1,7 @@
 """
 CLI d'agent-lancement : --step cadrage | refine | epic-cadrage | epic-sync | patch. Copie élaguée par script
-(scripts/elaguer_main.py d'agent-scrum-master) de main() : branches des autres étapes retirées.
-agent-scrum-master y délègue ces étapes.
+(scripts/elaguer_main.py de l'ancien agent-scrum-master) de main() : branches des autres étapes retirées.
+Lancée par l'IHM de cet agent (8506) ; agent-scrum-master, qui y déléguait ces étapes, est supprimé.
 """
 import io
 import logging
@@ -646,6 +646,6 @@ def finalize_epic_draft(epic_key: str, previous_manifest: dict) -> bool:
 
 
 if __name__ == "__main__":
-    # Fichiers produits ('<TICKET>-cadrage.md', patchs…) relatifs au dossier courant : celui d'agent-scrum-master
+    # Fichiers produits ('<TICKET>-cadrage.md', patchs…) relatifs au dossier courant : AGENT_DATA_DIR
     os.chdir(DATA_DIR)
     main()
