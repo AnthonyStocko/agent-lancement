@@ -17,5 +17,5 @@ N'ajoute AUCUN test Cucumber d'accompagnement à un correctif de code : ils sero
    - Si un fichier XML Studio est modifié, recalcule impérativement le xmlHash.
 4. Génère le fichier patch Git final (ex: '${target_issue}-client.patch' ou '${target_issue}-cucumber.patch').
 5. ${release_note_step}
-6. Joins le/les fichiers .patch en pièce jointe sur le ticket Jira ${target_issue} via l'outil d'attachement.
+6. Ne joins pas les patchs à Jira : le programme les attache au ticket ${target_issue} après ton exécution.
 7. Termine l'exécution avec un récapitulatif des fichiers modifiés dans le patch.
