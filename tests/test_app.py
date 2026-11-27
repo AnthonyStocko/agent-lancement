@@ -53,3 +53,19 @@ def test_patch_recap_cite_les_patchs():
     finally:
         sys.stdout, sys.stderr = saved
     assert "PROJX-1-a.patch" in main.patch_recap("PROJX-1", ["x/PROJX-1-a.patch"], "récapitulatif")
+
+
+def test_patchs_joints_au_ticket_par_le_programme(monkeypatch, capsys):
+    """L'agent n'a pas d'outil Jira : le programme joint lui-même les patchs, et un échec n'arrête pas l'étape."""
+    import importlib
+    main = importlib.import_module("main")
+    appels = []
+    monkeypatch.setattr(main, "attach_files", lambda cle, fichiers: appels.append((cle, fichiers)) or
+                        [f"Fichier {fichiers[0]} attaché avec succès au ticket {cle}."])
+    assert main.attach_patches("PROJX-1", ["PROJX-1-client.patch"])
+    assert appels == [("PROJX-1", ["PROJX-1-client.patch"])]
+    monkeypatch.setattr(main, "attach_files", lambda *a: ["Erreur d'ajout (403) : refusé"])
+    assert not main.attach_patches("PROJX-1", ["PROJX-1-client.patch"])
+    monkeypatch.setattr(main, "attach_files", lambda *a: (_ for _ in ()).throw(RuntimeError("réseau")))
+    assert not main.attach_patches("PROJX-1", ["PROJX-1-client.patch"])
+    assert "réseau" in capsys.readouterr().out

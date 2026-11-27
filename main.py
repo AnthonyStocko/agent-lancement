@@ -12,6 +12,7 @@ import re
 import sys
 import time
 from agent_socle import bitbucket_std, cli, jira_guard, knowledge_tools, livraisons
+from agent_socle.jira_cli import attach_files
 from agent_socle.cli import CLAUDE_EFFORT_ENV, CLAUDE_MODEL_ENV, ODATIO_DOCS_STEPS, SOCLE_DIR, _env_int, _read_text, _safe_memory, build_db_block, check_jira_untouched, claude_effort, claude_env, consult_knowledge, flush_knowledge_outbox, format_jira_context, odatio_docs_block, print_draft_status, produced, render_prompt, report_token_usage, run_claude, share_file, share_knowledge, ticket_client
 from agent_socle.depots import STD_LOCAL_ROOT, STD_READER, detect_odatio_version, ensure_cucumber_std_repo, ensure_local_repo
 from agent_socle.jira_tools import get_epic_children, get_full_jira_issue_context, std_only_projects, update_jira_release_note
@@ -458,6 +459,7 @@ def main():
                                 final_cadrage=cadrage_content, jira_context=jira_context):
                     print(f"[MÉMOIRE] Livrable validé indexé : {', '.join(patch_paths)}.")
                 publish_release_note(target_issue, release_note_file, run_started_at)
+                attach_patches(target_issue, patch_paths)
                 # Registre local des livraisons (lu par agent-manager-savoye) : pièces jointes vérifiées en lecture
                 if livraisons.noter_patch(target_issue, patch_paths):
                     print(f"[LIVRAISON] Patch(s) de {target_issue} notés dans le registre des livraisons.")
@@ -498,6 +500,19 @@ def publish_release_note(issue_key: str, note_path: str, run_started_at: float) 
     except Exception as e:
         print(f"[RELEASE NOTE] ⚠️ Mise à jour de la description Jira impossible ({e}). Fichier local conservé : {note_path}")
         return False
+
+
+def attach_patches(issue_key: str, patch_paths: list) -> bool:
+    """Joint les patchs au ticket Jira (sans doublon). Un échec n'interrompt jamais l'étape patch."""
+    try:
+        messages = attach_files(issue_key, patch_paths)
+    except Exception as e:
+        print(f"[JIRA] ⚠️ Pièce(s) jointe(s) impossible(s) sur {issue_key} ({e}). Patch(s) locaux conservés.")
+        return False
+    failed = [m for m in messages if m.startswith("Erreur")]
+    for message in messages:
+        print(f"[JIRA] {'⚠️' if message in failed else '✅'} {message}")
+    return not failed
 
 
 def epic_markdown(epic_key: str) -> str:
