@@ -12,6 +12,7 @@ N'ajoute AUCUN test Cucumber d'accompagnement à un correctif de code : ils sero
    Si des patchs validés similaires figurent dans la capitalisation, réutilise leurs conventions (emplacement des fichiers, nommage, structure des .feature) lorsque c'est pertinent.
 2. Crée la branche Git de travail '${target_issue}_dev_...' dans le/les dépôts concernés (y compris les dépôts de tests Cucumber client comme '${local_client_repo}').
 3. Effectue toutes les modifications requises :
+   - Respecte les conventions de développement '${conventions_path}' : n'en lis que les sections utiles aux fichiers modifiés (Grep par thème).
    - Si le ticket demande des tests Cucumber (ex: ajout de features, modification de runners, ajout du tag @DISABLED_...): rédige et modifie directement les fichiers BDD (.feature, .java, .xml, .json).
    - Si un fichier XML Studio est modifié, recalcule impérativement le xmlHash.
 4. Génère le fichier patch Git final (ex: '${target_issue}-client.patch' ou '${target_issue}-cucumber.patch').
